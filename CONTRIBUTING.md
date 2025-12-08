@@ -41,7 +41,7 @@ Please be respectful and constructive in all interactions. We welcome contributo
    ```bash
    git push origin feature/your-feature-name
    ```
-8. **Open a Pull Request** against the `main` branch
+8. **Open a Pull Request** against the `master` branch
 
 ## Development Setup
 

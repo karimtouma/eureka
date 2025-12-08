@@ -4,9 +4,14 @@
 
 Eureka is an open-source symbolic regression platform inspired by Eureqa. It uses evolutionary algorithms to automatically discover mathematical equations that describe your data, finding the optimal trade-off between accuracy and simplicity.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.11+-green.svg)
-![Next.js](https://img.shields.io/badge/next.js-16+-black.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11+-green.svg)](https://python.org)
+[![Next.js](https://img.shields.io/badge/next.js-16+-black.svg)](https://nextjs.org)
+[![CI/CD](https://github.com/karimtouma/eureka/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/karimtouma/eureka/actions)
+
+## 🚀 Live Demo
+
+**Try Eureka now:** [https://code.touma.io/eureka/](https://code.touma.io/eureka/)
 
 ## Features
 
@@ -55,6 +60,49 @@ uvicorn main:app --reload --port 8000
 cd frontend
 npm install
 npm run dev
+```
+
+### Production Deployment
+
+Deploy your own instance of Eureka using Docker:
+
+```bash
+# Clone the repository
+git clone https://github.com/karimtouma/eureka.git
+cd eureka
+
+# Build and run production containers
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
+
+The production setup includes:
+- **Frontend**: Next.js standalone build with optimized static assets
+- **Backend**: FastAPI with uvicorn workers
+- **Nginx**: Reverse proxy with gzip compression and WebSocket support
+
+#### Environment Configuration
+
+For custom deployments, you can configure:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `production` | Frontend environment |
+| `NEXT_PUBLIC_BASE_PATH` | `/eureka` | URL base path |
+
+#### Reverse Proxy Setup
+
+If deploying behind a reverse proxy (nginx, Caddy, etc.), ensure WebSocket upgrade headers are forwarded:
+
+```nginx
+location /eureka/ {
+    proxy_pass http://localhost:3080/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+}
 ```
 
 ## Usage
@@ -140,10 +188,12 @@ The algorithm maintains a **Pareto front** of non-dominated solutions, giving yo
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+2. Create a feature branch from `master` (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+5. Open a Pull Request against `master`
+
+**Note:** The `master` branch is protected. All changes must go through Pull Requests with passing CI checks.
 
 ## License
 
@@ -154,4 +204,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by [Eureqa](https://en.wikipedia.org/wiki/Eureqa) by Nutonian
 - Built with [DEAP](https://github.com/DEAP/deap) - Distributed Evolutionary Algorithms in Python
 - UI components styled with [Tailwind CSS](https://tailwindcss.com/)
-# Deployment test Mon Dec  8 03:35:36 UTC 2025
