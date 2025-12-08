@@ -49,6 +49,8 @@ interface ExtendedCandidate extends Candidate {
   test_predictions?: number[];
   test_x?: number[];
   test_y?: number[];
+  // Number of input features (for labeling)
+  n_features?: number;
 }
 
 interface ExtendedStats extends GenerationStats {
@@ -1332,15 +1334,21 @@ function FitChart({
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" strokeOpacity={0.8} />
-            <XAxis 
-              dataKey="x" 
+            <XAxis
+              dataKey="x"
               type="number"
-              stroke="#868e96" 
+              stroke="#868e96"
               fontSize={11}
               tickLine={false}
               axisLine={{ stroke: "#dee2e6" }}
               domain={zoomDomain?.x || ['auto', 'auto']}
-              label={{ value: "x (input)", position: "bottom", offset: 20, fill: "#868e96", fontSize: 11 }}
+              label={{
+                value: (candidate.n_features ?? 1) > 1 ? "Sample Index" : "x (input)",
+                position: "bottom",
+                offset: 20,
+                fill: "#868e96",
+                fontSize: 11
+              }}
             />
             <YAxis 
               stroke="#868e96" 

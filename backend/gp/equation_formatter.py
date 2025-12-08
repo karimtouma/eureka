@@ -130,23 +130,48 @@ def _split_arguments(args_str: str) -> list:
     return args
 
 
+def _extract_variable_names(expr_str: str) -> set:
+    """
+    Extract variable names from a DEAP expression.
+
+    Returns set of variable names found in the expression.
+    """
+    # Remove known function names and operators
+    known_funcs = {'add', 'sub', 'mul', 'div', 'pow', 'sin', 'cos', 'tan',
+                   'sqrt', 'log', 'exp', 'abs', 'protected_div', 'protected_log',
+                   'protected_sqrt', 'protected_pow', 'protected_exp',
+                   'protected_sin', 'protected_cos', 'protected_tan',
+                   'safe_add', 'safe_sub', 'safe_mul'}
+
+    # Find all word tokens
+    tokens = re.findall(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', expr_str)
+
+    # Filter out functions
+    variables = set()
+    for token in tokens:
+        if token.lower() not in known_funcs:
+            variables.add(token)
+
+    return variables
+
+
 def deap_to_sympy(expr_str: str) -> Optional[sp.Expr]:
     """
     Convert a DEAP expression string to a SymPy expression.
-    
+
     Args:
         expr_str: DEAP functional expression like "add(mul(x, 2), x)"
-        
+
     Returns:
         SymPy expression or None if parsing fails
     """
     try:
         # Clean up the expression
         cleaned = _tokenize_deap_expr(expr_str)
-        
+
         # Convert functional to infix notation
         infix = _parse_functional_to_infix(cleaned)
-        
+
         # Parse with SymPy
         # Define local symbols that might appear
         local_dict = {
@@ -155,19 +180,25 @@ def deap_to_sympy(expr_str: str) -> Optional[sp.Expr]:
             'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
             'abs': sp.Abs,
         }
-        
+
         # Add x0, x1, x2... as symbols
         for i in range(10):
             local_dict[f'x{i}'] = symbols(f'x_{i}')
             local_dict[f'ARG{i}'] = symbols(f'x_{i}')
-        
+
+        # Dynamically add any variable names found in the expression
+        var_names = _extract_variable_names(expr_str)
+        for var_name in var_names:
+            if var_name not in local_dict:
+                local_dict[var_name] = symbols(var_name)
+
         transformations = standard_transformations + (implicit_multiplication,)
-        
-        sympy_expr = parse_expr(infix, local_dict=local_dict, 
+
+        sympy_expr = parse_expr(infix, local_dict=local_dict,
                                 transformations=transformations)
-        
+
         return sympy_expr
-        
+
     except Exception as e:
         logger.warning(f"Failed to parse expression '{expr_str}': {e}")
         return None
