@@ -79,7 +79,7 @@ export default function DataPage() {
                 console.warn("Backend upload failed, using local data:", e);
               }
             },
-            error: (err) => {
+            error: (err: Error) => {
               setError(`Failed to parse CSV: ${err.message}`);
             },
           });
