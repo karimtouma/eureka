@@ -332,8 +332,13 @@ class GPEngine:
             # Include predictions for visualization
             if include_predictions:
                 result["train_predictions"] = pred_train.tolist()
-                result["train_x"] = self.X_train[:, 0].tolist() if self.X_train.shape[1] == 1 else None
+                # For single variable, use actual x values; otherwise use sample indices
+                if self.X_train.shape[1] == 1:
+                    result["train_x"] = self.X_train[:, 0].tolist()
+                else:
+                    result["train_x"] = list(range(len(self.y_train)))
                 result["train_y"] = self.y_train.tolist()
+                result["n_features"] = self.X_train.shape[1]
             
             if include_test:
                 pred_test = get_predictions_vectorized(individual, self.toolbox, self.X_test)
@@ -357,7 +362,12 @@ class GPEngine:
                 
                 if include_predictions:
                     result["test_predictions"] = pred_test.tolist()
-                    result["test_x"] = self.X_test[:, 0].tolist() if self.X_test.shape[1] == 1 else None
+                    # For single variable, use actual x values; otherwise use sample indices
+                    if self.X_test.shape[1] == 1:
+                        result["test_x"] = self.X_test[:, 0].tolist()
+                    else:
+                        # Use indices offset from train size for clarity
+                        result["test_x"] = list(range(len(self.y_train), len(self.y_train) + len(self.y_test)))
                     result["test_y"] = self.y_test.tolist()
             
             return result
