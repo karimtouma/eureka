@@ -62,3 +62,9 @@ backend/checkpoints/
 # Jupyter
 .ipynb_checkpoints/
 
+# Claude Code
+# Include: .claude/settings.json, .claude/commands/, CLAUDE.md
+# Exclude local settings (user-specific)
+.claude/settings.local.json
+.claude/*.local.json
+
