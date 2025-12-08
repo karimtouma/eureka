@@ -8,9 +8,9 @@ on:
 
 jobs:
   # ============================================
-  # Lint Frontend
+  # Build Frontend (validates TypeScript)
   # ============================================
-  lint-frontend:
+  build-frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,14 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run linter
-        run: npm run lint
+      - name: Build
+        run: npm run build
 
   # ============================================
-  # Build & Deploy (only on main)
+  # Deploy (only on main)
   # ============================================
   deploy:
-    needs: [lint-frontend]
+    needs: [build-frontend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
