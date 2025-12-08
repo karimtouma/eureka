@@ -86,10 +86,10 @@ export class ApiError extends Error {
 // ============================================
 
 const getApiUrl = () => {
-  // In production, API is served via nginx at /eureka/api
+  // In production, API is served via nginx at /eureka
   if (process.env.NODE_ENV === "production") {
     if (typeof window === "undefined") return "http://eureka-backend:8000";
-    return "/eureka/api";
+    return "/eureka";
   }
   // Development: direct to backend
   if (typeof window === "undefined") return "http://localhost:8000";
@@ -100,7 +100,7 @@ const getWsUrl = () => {
   // In production, WebSocket via nginx at /eureka/ws
   if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    return `${protocol}//${window.location.host}/eureka/ws`;
+    return `${protocol}//${window.location.host}/eureka`;
   }
   // Development
   if (typeof window === "undefined") return "ws://localhost:8000";
